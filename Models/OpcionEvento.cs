@@ -1,6 +1,6 @@
 namespace EventosApi;
 
 public class OpcionEvento {
-    public DateTime Fecha;
-    public int Votos;
+    public DateTime Fecha {get;}
+    public int Votos {get;}
 }

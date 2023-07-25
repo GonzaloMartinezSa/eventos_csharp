@@ -20,15 +20,17 @@ public class EventoController : ControllerBase {
     public ActionResult<string> GetEventoById(int id)
     {
         // Logic to get evento by ID
-        return $"Evento with ID: {id}";
+        //return $"Evento with ID: {id}";
+        return StatusCode(200, new{evento=new{id=id}});
     }
 
     // POST: /evento
     [HttpPost]
-    public ActionResult<string> CreateEvento(Evento evento)
+    public ActionResult<string> CreateEvento([FromBody] Evento evento)
     {
         // Logic to create a new evento
-        return $"Created evento: {evento.Nombre}";
+        //return $"Created evento: {evento.Nombre}";
+        return StatusCode(201, new{evento=evento});
     }
 
     // PUT: /evento/{id}
@@ -36,7 +38,8 @@ public class EventoController : ControllerBase {
     public ActionResult<string> UpdateEvento(int id, Evento evento)
     {
         // Logic to update an existing evento with the specified ID
-        return $"Updated evento with ID {id} to: {evento.Nombre}";
+        //return $"Updated evento with ID {id} to: {evento.Nombre}";
+        return StatusCode(200, new{evento=evento});
     }
 
     // DELETE: /evento/{id}
@@ -44,6 +47,7 @@ public class EventoController : ControllerBase {
     public ActionResult<string> DeleteEvento(int id)
     {
         // Logic to delete the evento with the specified ID
-        return $"Deleted evento with ID: {id}";
+        //return $"Deleted evento with ID: {id}";
+        return StatusCode(204);
     }
 }
