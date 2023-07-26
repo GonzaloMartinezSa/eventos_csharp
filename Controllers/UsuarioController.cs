@@ -16,11 +16,24 @@ public class UsuarioController : ControllerBase {
 
     // GET: /usuarios
     [HttpGet]
-    public ActionResult<IEnumerable<Usuario>> GetAllUsuarios()
+    public ActionResult<IEnumerable<Usuario>> GetAllUsuarios([FromQuery] string? sort = "rank_asc")
     {
         // Logic to get all usuarios
 
-        var usuarios = db.Usuarios.ToList();
+        IQueryable<Evento> usuariosQuery = db.Eventos;
+
+        // Handle the 'order' query parameter
+        if (sort == null || sort.ToLower() == "rank_asc")
+        {
+            usuariosQuery = usuariosQuery.OrderBy(e => e.Id); // Sort by 'Id' in ascending order (default)
+        }
+        else
+        {
+            usuariosQuery = usuariosQuery.OrderByDescending(e => e.Id); // Sort by 'Id' in descending order
+        }
+
+        var usuarios = usuariosQuery.ToList();
+
         return StatusCode(200, new{usuarios=usuarios});
     }
 

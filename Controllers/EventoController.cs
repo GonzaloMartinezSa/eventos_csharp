@@ -16,11 +16,24 @@ public class EventoController : ControllerBase {
 
     // GET: /eventos
     [HttpGet]
-    public ActionResult<IEnumerable<Evento>> GetAllEventos()
+    public ActionResult<IEnumerable<Evento>> GetAllEventos([FromQuery] string? sort = "rank_asc")
     {
         // Logic to get all eventos
 
-        var eventos = db.Eventos.ToList();
+        IQueryable<Evento> eventosQuery = db.Eventos;
+
+        // Handle the 'order' query parameter
+        if (sort == null || sort.ToLower() == "rank_asc")
+        {
+            eventosQuery = eventosQuery.OrderBy(e => e.Id); // Sort by 'Id' in ascending order (default)
+        }
+        else
+        {
+            eventosQuery = eventosQuery.OrderByDescending(e => e.Id); // Sort by 'Id' in descending order
+        }
+
+        var eventos = eventosQuery.ToList();
+
         return StatusCode(200, new{eventos=eventos});
     }
 
@@ -45,7 +58,7 @@ public class EventoController : ControllerBase {
 
     // POST: /eventos
     [HttpPost]
-    public ActionResult<string> CreateEvento(Evento evento)
+    public ActionResult<string> CreateEvento([FromBody] Evento evento)
     {
         // Logic to create a new evento
 
@@ -61,7 +74,7 @@ public class EventoController : ControllerBase {
 
     // PUT: /eventos/{id}
     [HttpPut("{id}")]
-    public ActionResult<string> UpdateEvento(int id, Evento evento)
+    public ActionResult<string> UpdateEvento(int id, [FromBody] Evento evento)
     {
         // Logic to update an existing evento with the specified ID
 
