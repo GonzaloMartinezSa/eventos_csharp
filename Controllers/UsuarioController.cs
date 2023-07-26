@@ -19,6 +19,7 @@ public class UsuarioController : ControllerBase {
     public ActionResult<IEnumerable<Usuario>> GetAllUsuarios()
     {
         // Logic to get all usuarios
+
         var usuarios = db.Usuarios.ToList();
         return StatusCode(200, new{usuarios=usuarios});
     }
@@ -30,16 +31,16 @@ public class UsuarioController : ControllerBase {
         // Logic to get usuario by ID
 
         // Find the usuario entity with the given ID
-            var usuario = db.Usuarios.Find(id);
+        var usuario = db.Usuarios.Find(id);
 
-            if (usuario == null)
-            {
-                // If no usuario is found with the given ID, return a 404 Not Found response
-                return NotFound();
-            }
+        if (usuario == null)
+        {
+            // If no usuario is found with the given ID, return a 404 Not Found response
+            return NotFound();
+        }
 
-            // If usuario is found, return it as a 200 OK response
-            return StatusCode(200, new{usuario=usuario});
+        // If usuario is found, return it as a 200 OK response
+        return StatusCode(200, new{usuario=usuario});
     }
 
     // POST: /usuarios
@@ -47,17 +48,15 @@ public class UsuarioController : ControllerBase {
     public ActionResult<string> CreateUsuario(Usuario usuario)
     {
         // Logic to create a new usuario
-        
-        //return $"Created usuario: {usuario.Nombre}";
 
         // Add the usuario to the DbContext
-            db.Usuarios.Add(usuario);
+        db.Usuarios.Add(usuario);
 
-            // Save the changes to the database
-            db.SaveChanges();
+        // Save the changes to the database
+        db.SaveChanges();
 
-            // Return the created usuario with a 201 Created response
-            return StatusCode(201, new{usuario=usuario});
+        // Return the created usuario with a 201 Created response
+        return StatusCode(201, new{usuario=usuario});
     }
 
     // PUT: /usuarios/{id}
@@ -65,8 +64,24 @@ public class UsuarioController : ControllerBase {
     public ActionResult<string> UpdateUsuario(int id, Usuario usuario)
     {
         // Logic to update an existing usuario with the specified ID
-        //return $"Updated usuario with ID {id} to: {usuario.Nombre}";
-        return StatusCode(200, new{usuario=usuario});
+
+        // Find the existing Evento entity with the given ID
+        var existingUsuario = db.Usuarios.Find(id);
+
+        if (existingUsuario == null)
+        {
+            // If no existing evento is found with the given ID, return a 404 Not Found response
+            return NotFound();
+        }
+
+        // Update the properties of the existing Evento entity with the data from the updatedEvento
+        existingUsuario.Email = usuario.Email; // Add other properties to update as needed
+
+        // Save changes to the database
+        db.SaveChanges();
+
+        // Return the updated Evento entity as a 200 OK response
+        return StatusCode(200, new{usuario=existingUsuario});
     }
 
     // DELETE: /usuarios/{id}
@@ -74,8 +89,6 @@ public class UsuarioController : ControllerBase {
     public ActionResult DeleteUsuario(int id)
     {
         // Logic to delete the usuario with the specified ID
-        //return $"Deleted usuario with ID: {id}";
-        //return StatusCode(204);
 
         // Find the usuario entity with the given ID
         var usuario = db.Usuarios.Find(id);

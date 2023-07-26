@@ -19,7 +19,7 @@ public class EventoController : ControllerBase {
     public ActionResult<IEnumerable<Evento>> GetAllEventos()
     {
         // Logic to get all eventos
-        //var eventos = new List<string>{"Evento 1", "Evento 2", "Evento 3"};
+
         var eventos = db.Eventos.ToList();
         return StatusCode(200, new{eventos=eventos});
     }
@@ -29,9 +29,6 @@ public class EventoController : ControllerBase {
     public ActionResult<Evento> GetEventoById(int id)
     {
         // Logic to get evento by ID
-
-        //return $"Evento with ID: {id}";
-        //return StatusCode(200, new{evento=new{id=id}});
 
         // Find the Evento entity with the given ID
         var evento = db.Eventos.Find(id);
@@ -51,8 +48,6 @@ public class EventoController : ControllerBase {
     public ActionResult<string> CreateEvento(Evento evento)
     {
         // Logic to create a new evento
-        
-        //return $"Created evento: {evento.Nombre}";
 
         // Add the evento to the DbContext
         db.Eventos.Add(evento);
@@ -69,8 +64,24 @@ public class EventoController : ControllerBase {
     public ActionResult<string> UpdateEvento(int id, Evento evento)
     {
         // Logic to update an existing evento with the specified ID
-        //return $"Updated evento with ID {id} to: {evento.Nombre}";
-        return StatusCode(200, new{evento=evento});
+
+        // Find the existing Evento entity with the given ID
+        var existingEvento = db.Eventos.Find(id);
+
+        if (existingEvento == null)
+        {
+            // If no existing evento is found with the given ID, return a 404 Not Found response
+            return NotFound();
+        }
+
+        // Update the properties of the existing Evento entity with the data from the updatedEvento
+        existingEvento.Nombre = evento.Nombre; // Add other properties to update as needed
+
+        // Save changes to the database
+        db.SaveChanges();
+
+        // Return the updated Evento entity as a 200 OK response
+        return StatusCode(200, new{evento=existingEvento});
     }
 
     // DELETE: /eventos/{id}
@@ -78,8 +89,6 @@ public class EventoController : ControllerBase {
     public ActionResult DeleteEvento(int id)
     {
         // Logic to delete the evento with the specified ID
-        //return $"Deleted evento with ID: {id}";
-        //return StatusCode(204);
 
         // Find the Evento entity with the given ID
         var evento = db.Eventos.Find(id);
