@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using EventosApi.Data;
 
 namespace EventosApi.Controllers;
 
@@ -6,34 +7,64 @@ namespace EventosApi.Controllers;
 [Route("eventos")]
 public class EventoController : ControllerBase {
 
-    // GET: /evento
+    private readonly DatabaseContext db;
+
+    public EventoController(DatabaseContext dbContext)
+    {
+        db = dbContext;
+    }
+
+    // GET: /eventos
     [HttpGet]
-    public ActionResult<IEnumerable<string>> GetAllEventos()
+    public ActionResult<IEnumerable<Evento>> GetAllEventos()
     {
         // Logic to get all eventos
-        var eventos = new List<string>{"Evento 1", "Evento 2", "Evento 3"};
+        //var eventos = new List<string>{"Evento 1", "Evento 2", "Evento 3"};
+        var eventos = db.Eventos.ToList();
         return StatusCode(200, new{eventos=eventos});
     }
 
-    // GET: /evento/{id}
+    // GET: /eventos/{id}
     [HttpGet("{id}")]
-    public ActionResult<string> GetEventoById(int id)
+    public ActionResult<Evento> GetEventoById(int id)
     {
         // Logic to get evento by ID
+
         //return $"Evento with ID: {id}";
-        return StatusCode(200, new{evento=new{id=id}});
+        //return StatusCode(200, new{evento=new{id=id}});
+
+        // Find the Evento entity with the given ID
+        var evento = db.Eventos.Find(id);
+
+        if (evento == null)
+        {
+            // If no evento is found with the given ID, return a 404 Not Found response
+            return NotFound();
+        }
+
+        // If evento is found, return it as a 200 OK response
+        return StatusCode(200, new{evento=evento});
     }
 
-    // POST: /evento
+    // POST: /eventos
     [HttpPost]
-    public ActionResult<string> CreateEvento([FromBody] Evento evento)
+    public ActionResult<string> CreateEvento(Evento evento)
     {
         // Logic to create a new evento
+        
         //return $"Created evento: {evento.Nombre}";
+
+        // Add the evento to the DbContext
+        db.Eventos.Add(evento);
+
+        // Save the changes to the database
+        db.SaveChanges();
+
+        // Return the created evento with a 201 Created response
         return StatusCode(201, new{evento=evento});
     }
 
-    // PUT: /evento/{id}
+    // PUT: /eventos/{id}
     [HttpPut("{id}")]
     public ActionResult<string> UpdateEvento(int id, Evento evento)
     {
@@ -42,12 +73,28 @@ public class EventoController : ControllerBase {
         return StatusCode(200, new{evento=evento});
     }
 
-    // DELETE: /evento/{id}
+    // DELETE: /eventos/{id}
     [HttpDelete("{id}")]
-    public ActionResult<string> DeleteEvento(int id)
+    public ActionResult DeleteEvento(int id)
     {
         // Logic to delete the evento with the specified ID
         //return $"Deleted evento with ID: {id}";
-        return StatusCode(204);
+        //return StatusCode(204);
+
+        // Find the Evento entity with the given ID
+        var evento = db.Eventos.Find(id);
+
+        if (evento == null)
+        {
+            // If no evento is found with the given ID, return a 404 Not Found response
+            return NotFound();
+        }
+
+        // If evento is found, remove it from the DbContext and save changes to the database
+        db.Eventos.Remove(evento);
+        db.SaveChanges();
+
+        // Return a 204 No Content response to indicate successful deletion
+        return NoContent();
     }
 }
